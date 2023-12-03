@@ -58,3 +58,4 @@ cookie={"APIC-cookie":TOKEN_FUNCION}
 respuesta=requests.post(url,data=json.dumps(payload), headers=header, cookies=cookie, verify=False)
 print(respuesta)
 
+
