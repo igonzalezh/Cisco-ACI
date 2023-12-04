@@ -1,7 +1,6 @@
 import requests
 import json
 import conf
-
 def get_token():
     requests.packages.urllib3.disable_warnings()
 
@@ -15,22 +14,24 @@ def get_token():
           }
     }
     header={"content-type": "application/json"}
-
-    ##LA DATA SE DEBE PASAR A LA ESTRUCTURA JSON CON JSON DUMPS##
-    ##LA VARIABLE RESPUESTA SE CARGA CON EL CONTENIDO QUE RESPONDE EL CISCO APIC##
-
     respuesta=requests.post(url, json.dumps(data), headers=header, verify=False)
 
-    ##LO ANTERIOR REGRESA COMO TEXTO, LE DAMOS EL FORTMATO DE JSON.() ##
     respuesta_json=respuesta.json()
 
-    ## LA RESPUESTA ESTA EN JSON - DICCIONARIO (2 ELEMENTOS) EL 2ª CON UNA LISTA ##
-    ## SI QUEREMOS SACAR EL VALOR DEL TOKEN DEBEMOS INVOCAR LA VARIABLE "imdata"##
     API_TOKEN=respuesta_json["imdata"][0]["aaaLogin"]["attributes"]["token"]
     return API_TOKEN
 
 API_TOKEN = get_token()
-print("\nAPI_TOKEN: "+API_TOKEN)
 
+
+##OBTENER FIRMWARE DEL APIC##
+
+url="https://10.10.20.14/api/class/firmwareCtrlrFwStatusCont.json?query-target=subtree"
+header={"content-type": "application/json"}
+cookie={"APIC-cookie":API_TOKEN}
+respuesta=requests.get(url, headers=header, cookies=cookie, verify=False)
+respuesta_json=respuesta.json()
+running_firmware=respuesta_json["imdata"][1]["firmwareCtrlrRunning"]["attributes"]["version"]
+print(running_firmware)
 
 
